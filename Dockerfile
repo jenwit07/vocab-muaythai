@@ -16,12 +16,7 @@ FROM node:22-alpine AS builder
 RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app
 
-COPY --from=deps /app/node_modules ./node_modules
-COPY --from=deps /app/apps/web/node_modules ./apps/web/node_modules
-COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
-COPY --from=deps /app/packages/ai/node_modules ./packages/ai/node_modules
-COPY --from=deps /app/packages/ws/node_modules ./packages/ws/node_modules
-
+COPY --from=deps /app/ ./
 COPY . .
 
 # Build Next.js
@@ -29,33 +24,19 @@ RUN pnpm --filter @repo/web build
 
 # --- Stage 3: Production runner ---
 FROM node:22-alpine AS runner
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+RUN npm install -g tsx
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy built Next.js app
+# Copy everything from builder (includes node_modules + built .next)
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./apps/web/.next/static
 
-# Copy WebSocket server source + deps
-COPY --from=deps /app/packages/ws/node_modules ./packages/ws/node_modules
-COPY packages/ws/src ./packages/ws/src
-COPY packages/ws/package.json ./packages/ws/
-COPY packages/ws/tsconfig.json ./packages/ws/
-
-# Copy seed scripts + data (for initial setup)
-COPY --from=deps /app/packages/db/node_modules ./packages/db/node_modules
-COPY packages/db/src ./packages/db/src
-COPY packages/db/package.json ./packages/db/
-COPY packages/db/tsconfig.json ./packages/db/
-
-# Copy AI package
-COPY packages/ai/src ./packages/ai/src
-COPY packages/ai/package.json ./packages/ai/
-
-# Install tsx for WS server + seed scripts
-RUN npm install -g tsx
+# Copy all packages with their node_modules for seed + ws + ai
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/packages/ ./packages/
+COPY packages/ ./packages/
 
 # Start script
 COPY deploy/start.sh ./start.sh
