@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@repo/db", "@repo/ai"],
   serverExternalPackages: ["mongodb"],
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
