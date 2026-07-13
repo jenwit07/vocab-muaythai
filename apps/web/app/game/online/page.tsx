@@ -30,7 +30,9 @@ type BubbleData = {
 
 type GamePhase = "menu" | "searching" | "match_found" | "countdown" | "playing" | "result";
 
-const WS_URL = "ws://localhost:3333";
+const WS_URL = typeof window !== "undefined"
+  ? (window.location.hostname === "localhost" ? "ws://localhost:3333" : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws`)
+  : "ws://localhost:3333";
 
 const DIFF_CONFIG: Record<string, { points: number; color: string; bg: string; border: string }> = {
   easy: { points: 10, color: "#16a34a", bg: "#dcfce7", border: "#16a34a" },

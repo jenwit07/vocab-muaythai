@@ -327,22 +327,16 @@ setInterval(tryMatchmaking, 2000);
 
 // --- Fetch vocab ---
 async function fetchVocab(): Promise<VocabItem[]> {
-  try {
-    const res = await fetch("http://localhost:3001/api/vocab");
-    const data = await res.json();
-    cachedVocab = data.words ?? [];
-    return cachedVocab;
-  } catch {
+  for (const port of [3000, 3001]) {
     try {
-      const res = await fetch("http://localhost:3000/api/vocab");
+      const res = await fetch(`http://localhost:${port}/api/vocab`);
       const data = await res.json();
       cachedVocab = data.words ?? [];
-      return cachedVocab;
-    } catch {
-      console.error("Could not fetch vocab. Make sure dev server is running.");
-      return [];
-    }
+      if (cachedVocab.length > 0) return cachedVocab;
+    } catch {}
   }
+  console.error("Could not fetch vocab. Make sure dev server is running.");
+  return [];
 }
 
 // Pre-fetch vocab on startup
