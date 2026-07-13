@@ -90,22 +90,22 @@ export default function ExplorePage() {
   const categories = Object.keys(CATEGORY_COLORS);
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gray-950">
+    <div className="fixed inset-0 flex flex-col bg-white">
       {/* Top bar */}
-      <div className="shrink-0 border-b border-gray-800/50 bg-gray-950/80 backdrop-blur-sm px-5 py-3 z-30">
+      <div className="shrink-0 border-b border-gray-200 bg-white/80 backdrop-blur-sm px-5 py-3 z-30">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <a href="/" className="text-sm font-bold text-gray-400 hover:text-white">
+            <a href="/" className="text-sm font-bold text-gray-500 hover:text-gray-900">
               &larr;
             </a>
             <h1 className="text-sm font-semibold">Explore Vocab</h1>
-            <span className="rounded-full bg-gray-800 px-2.5 py-0.5 text-xs text-gray-400">
+            <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500">
               {bubbles.length} words
             </span>
           </div>
-          <div className="hidden md:flex gap-3 text-xs text-gray-500">
+          <div className="hidden md:flex gap-3 text-xs text-gray-400">
             <span>size = difficulty</span>
-            <span className="text-gray-700">|</span>
+            <span className="text-gray-300">|</span>
             <span>position = meaning similarity</span>
           </div>
         </div>
@@ -114,7 +114,7 @@ export default function ExplorePage() {
           <button
             onClick={() => setCategory("")}
             className={`rounded-full px-3 py-1 text-xs transition-colors ${
-              !category ? "bg-white text-gray-900" : "bg-gray-800/60 text-gray-400 hover:text-white"
+              !category ? "bg-gray-900 text-white" : "bg-gray-100 text-gray-500 hover:text-gray-900"
             }`}
           >
             All
@@ -125,8 +125,8 @@ export default function ExplorePage() {
               onClick={() => setCategory(cat)}
               className="rounded-full px-3 py-1 text-xs transition-colors"
               style={{
-                backgroundColor: category === cat ? CATEGORY_COLORS[cat] : "rgba(31,41,55,0.6)",
-                color: category === cat ? "white" : "rgb(156,163,175)",
+                backgroundColor: category === cat ? CATEGORY_COLORS[cat] : "rgb(243,244,246)",
+                color: category === cat ? "white" : "rgb(107,114,128)",
               }}
             >
               {CATEGORY_LABELS[cat]}
@@ -144,7 +144,7 @@ export default function ExplorePage() {
         data-canvas="true"
       >
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center text-gray-500 z-10">
+          <div className="absolute inset-0 flex items-center justify-center text-gray-400 z-10">
             <svg className="mr-2 h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-20" />
               <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -174,7 +174,7 @@ export default function ExplorePage() {
         {selected && (
           <div className="absolute bottom-0 left-0 right-0 z-30 p-4 pointer-events-none">
             <div
-              className="pointer-events-auto mx-auto max-w-xl rounded-2xl border border-gray-700/50 bg-gray-900/95 backdrop-blur-md p-5 shadow-2xl"
+              className="pointer-events-auto mx-auto max-w-xl rounded-2xl border border-gray-200 bg-white/95 backdrop-blur-md p-5 shadow-2xl"
               style={{ borderColor: `${CATEGORY_COLORS[selected.category]}30` }}
             >
               <div className="flex items-start justify-between gap-4">
@@ -186,7 +186,7 @@ export default function ExplorePage() {
                     >
                       {selected.word}
                     </h2>
-                    <span className="rounded bg-gray-800 px-2 py-0.5 text-xs text-gray-400">
+                    <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
                       {selected.pos}
                     </span>
                     <span
@@ -198,18 +198,18 @@ export default function ExplorePage() {
                     >
                       {selected.difficulty}
                     </span>
-                    <span className="text-xs text-gray-600">
+                    <span className="text-xs text-gray-400">
                       {CATEGORY_LABELS[selected.category]}
                     </span>
                   </div>
-                  <p className="text-lg text-gray-100">{selected.meaningTh}</p>
+                  <p className="text-lg text-gray-900">{selected.meaningTh}</p>
                   {selected.meaningEn && (
-                    <p className="text-sm text-gray-400">{selected.meaningEn}</p>
+                    <p className="text-sm text-gray-500">{selected.meaningEn}</p>
                   )}
                 </div>
                 <button
                   onClick={() => setSelected(null)}
-                  className="shrink-0 rounded-lg p-1.5 text-gray-500 hover:bg-gray-800 hover:text-gray-300"
+                  className="shrink-0 rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
                 >
                   <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                     <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -220,18 +220,18 @@ export default function ExplorePage() {
               <div className="mt-3 grid gap-3 sm:grid-cols-3">
                 {selected.examples.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-gray-500">Example</p>
-                    <p className="text-sm text-gray-300 italic">
+                    <p className="text-xs font-medium text-gray-400">Example</p>
+                    <p className="text-sm text-gray-600 italic">
                       &ldquo;{selected.examples[0]}&rdquo;
                     </p>
                   </div>
                 )}
                 {selected.collocations.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-gray-500">Collocations</p>
+                    <p className="text-xs font-medium text-gray-400">Collocations</p>
                     <div className="flex flex-wrap gap-1">
                       {selected.collocations.map((c) => (
-                        <span key={c} className="rounded bg-gray-800 px-2 py-0.5 text-xs text-gray-300">
+                        <span key={c} className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
                           {c}
                         </span>
                       ))}
@@ -240,7 +240,7 @@ export default function ExplorePage() {
                 )}
                 {selected.confusedWith.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-gray-500">Confused with</p>
+                    <p className="text-xs font-medium text-gray-400">Confused with</p>
                     <div className="flex flex-wrap gap-1">
                       {selected.confusedWith.map((w) => (
                         <button
@@ -249,7 +249,7 @@ export default function ExplorePage() {
                             const target = bubbles.find((bb) => bb.word === w);
                             if (target) setSelected(target);
                           }}
-                          className="rounded-full border px-2 py-0.5 text-xs hover:bg-gray-800"
+                          className="rounded-full border px-2 py-0.5 text-xs hover:bg-gray-100"
                           style={{
                             borderColor: `${CATEGORY_COLORS[selected.category]}40`,
                             color: CATEGORY_COLORS[selected.category],
@@ -366,9 +366,10 @@ function FloatingBubble({
       }}
     >
       <span
-        className="text-center leading-tight font-medium px-1 select-none pointer-events-none"
+        className="text-center leading-tight font-medium select-none pointer-events-none break-all"
         style={{
-          fontSize: size < 60 ? "9px" : size < 70 ? "10px" : "11px",
+          fontSize: `${Math.max(7, Math.min(11, (size - 16) / (bubble.word.length * 0.55)))}px`,
+          width: size - 14,
           color: isSelected ? "white" : isFaded ? `${color}60` : color,
           transition: "color 0.5s ease",
         }}

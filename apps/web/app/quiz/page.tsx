@@ -149,19 +149,19 @@ function QuizContent() {
       <div className="mx-auto max-w-lg space-y-6 pt-8">
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold">Vocab Quiz</h1>
-          <p className="text-gray-400">
+          <p className="text-gray-500">
             English word → เลือกความหมายภาษาไทย
           </p>
         </div>
 
         {/* Category */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Category</label>
+          <label className="text-sm font-medium text-gray-700">Category</label>
           <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setCategory("")}
               className={`rounded-full px-4 py-1.5 text-sm ${
-                !category ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400 hover:text-white"
+                !category ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-500 hover:text-gray-900"
               }`}
             >
               All categories
@@ -173,7 +173,7 @@ function QuizContent() {
                 className={`rounded-full px-4 py-1.5 text-sm capitalize ${
                   category === cat
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:text-white"
+                    : "bg-gray-100 text-gray-500 hover:text-gray-900"
                 }`}
               >
                 {cat.replace(/_/g, " ")}
@@ -184,12 +184,12 @@ function QuizContent() {
 
         {/* Difficulty */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Difficulty</label>
+          <label className="text-sm font-medium text-gray-700">Difficulty</label>
           <div className="flex gap-2">
             <button
               onClick={() => setDifficulty("")}
               className={`rounded-full px-4 py-1.5 text-sm ${
-                !difficulty ? "bg-blue-600 text-white" : "bg-gray-800 text-gray-400 hover:text-white"
+                !difficulty ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-500 hover:text-gray-900"
               }`}
             >
               All levels
@@ -201,7 +201,7 @@ function QuizContent() {
                 className={`rounded-full px-4 py-1.5 text-sm capitalize ${
                   difficulty === d
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:text-white"
+                    : "bg-gray-100 text-gray-500 hover:text-gray-900"
                 }`}
               >
                 {d}
@@ -212,7 +212,7 @@ function QuizContent() {
 
         {/* Quiz Length */}
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-300">Questions</label>
+          <label className="text-sm font-medium text-gray-700">Questions</label>
           <div className="flex gap-2">
             {QUIZ_LENGTHS.map((n) => (
               <button
@@ -221,7 +221,7 @@ function QuizContent() {
                 className={`rounded-full px-4 py-1.5 text-sm ${
                   quizLength === n
                     ? "bg-blue-600 text-white"
-                    : "bg-gray-800 text-gray-400 hover:text-white"
+                    : "bg-gray-100 text-gray-500 hover:text-gray-900"
                 }`}
               >
                 {n}
@@ -232,7 +232,7 @@ function QuizContent() {
 
         <button
           onClick={fetchQuestions}
-          className="w-full rounded-xl bg-blue-600 py-4 text-lg font-semibold hover:bg-blue-500"
+          className="w-full rounded-xl bg-blue-600 py-4 text-lg font-semibold text-white hover:bg-blue-500"
         >
           Start Quiz
         </button>
@@ -250,7 +250,7 @@ function QuizContent() {
         <p className="text-gray-400">No questions available for this filter.</p>
         <button
           onClick={() => setShowSetup(true)}
-          className="rounded-lg bg-blue-600 px-6 py-3 font-medium hover:bg-blue-500"
+          className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-500"
         >
           Change Settings
         </button>
@@ -270,7 +270,7 @@ function QuizContent() {
           <h1 className="text-3xl font-bold">{emoji}</h1>
           <div className="relative mx-auto h-32 w-32">
             <svg className="h-32 w-32 -rotate-90" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="50" stroke="#1f2937" strokeWidth="10" fill="none" />
+              <circle cx="60" cy="60" r="50" stroke="#e5e7eb" strokeWidth="10" fill="none" />
               <circle
                 cx="60"
                 cy="60"
@@ -284,7 +284,7 @@ function QuizContent() {
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-3xl font-bold">{result.accuracy}%</span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-gray-500">
                 {result.score}/{result.total}
               </span>
             </div>
@@ -294,7 +294,7 @@ function QuizContent() {
         {/* Wrong answers detail */}
         {wrongAnswers.length > 0 && (
           <div className="space-y-2">
-            <h3 className="font-semibold text-red-400">
+            <h3 className="font-semibold text-red-600">
               Words to review ({wrongAnswers.length})
             </h3>
             {wrongAnswers.map((a) => {
@@ -306,14 +306,14 @@ function QuizContent() {
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">{a.word}</span>
-                    <span className="text-xs text-gray-500 capitalize">
+                    <span className="text-xs text-gray-400 capitalize">
                       {a.category.replace(/_/g, " ")}
                     </span>
                   </div>
-                  <p className="text-sm text-green-400">
+                  <p className="text-sm text-green-600">
                     Correct: {q?.correctAnswer}
                   </p>
-                  <p className="text-sm text-red-400/70">
+                  <p className="text-sm text-red-500">
                     Your answer: {a.selected}
                   </p>
                 </div>
@@ -328,19 +328,19 @@ function QuizContent() {
               setShowSetup(false);
               fetchQuestions();
             }}
-            className="rounded-xl bg-blue-600 py-3 font-medium hover:bg-blue-500"
+            className="rounded-xl bg-blue-600 py-3 font-medium text-white hover:bg-blue-500"
           >
             Play Again
           </button>
           <button
             onClick={() => setShowSetup(true)}
-            className="rounded-xl border border-gray-700 py-3 font-medium hover:border-gray-500"
+            className="rounded-xl border border-gray-200 py-3 font-medium hover:border-gray-400"
           >
             Change Settings
           </button>
           <a
             href="/dashboard"
-            className="rounded-xl border border-gray-700 py-3 text-center font-medium hover:border-gray-500 sm:col-span-2"
+            className="rounded-xl border border-gray-200 py-3 text-center font-medium hover:border-gray-400 sm:col-span-2"
           >
             View Dashboard
           </a>
@@ -358,14 +358,14 @@ function QuizContent() {
       {/* Progress bar */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-400">
+          <span className="text-gray-500">
             {current + 1} / {questions.length}
           </span>
-          <span className="text-gray-400">
+          <span className="text-gray-500">
             Score: {score}/{current + (selected ? 1 : 0)}
           </span>
         </div>
-        <div className="h-1.5 rounded-full bg-gray-800">
+        <div className="h-1.5 rounded-full bg-gray-100">
           <div
             className="h-1.5 rounded-full bg-blue-500 transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -374,41 +374,41 @@ function QuizContent() {
       </div>
 
       {/* Word card */}
-      <div className="rounded-2xl border border-gray-800 bg-gray-900 p-6 space-y-3">
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6 space-y-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs text-gray-500 capitalize">
+          <span className="text-xs text-gray-400 capitalize">
             {q.category.replace(/_/g, " ")}
           </span>
           <div className="flex gap-2">
             <span className={`rounded-full px-2 py-0.5 text-xs ${diffColor}`}>
               {q.difficulty}
             </span>
-            <span className="rounded-full bg-gray-800 px-2 py-0.5 text-xs text-gray-400">
+            <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
               {q.pos}
             </span>
           </div>
         </div>
 
-        <h2 className="text-3xl font-bold text-blue-300">{q.word}</h2>
+        <h2 className="text-3xl font-bold text-blue-600">{q.word}</h2>
 
         {/* Hint toggle */}
         {!showHint && selected === null && (
           <button
             onClick={() => setShowHint(true)}
-            className="text-xs text-gray-500 hover:text-gray-300"
+            className="text-xs text-gray-400 hover:text-gray-600"
           >
             Show hint (example sentence)
           </button>
         )}
         {showHint && q.example && (
-          <p className="text-sm text-gray-400 italic">
+          <p className="text-sm text-gray-500 italic">
             &ldquo;{q.example.replace(new RegExp(q.word, "gi"), "______")}&rdquo;
           </p>
         )}
       </div>
 
       {/* Question */}
-      <p className="text-center text-lg font-medium text-gray-300">
+      <p className="text-center text-lg font-medium text-gray-700">
         คำนี้แปลว่าอะไร?
       </p>
 
@@ -419,17 +419,17 @@ function QuizContent() {
             "rounded-xl border-2 px-5 py-4 text-left transition-all duration-200";
           if (selected !== null) {
             if (opt === q.correctAnswer)
-              cls += " border-green-500 bg-green-500/10 text-green-300";
+              cls += " border-green-500 bg-green-500/10 text-green-700";
             else if (opt === selected)
-              cls += " border-red-500 bg-red-500/10 text-red-300";
-            else cls += " border-gray-800 text-gray-600";
+              cls += " border-red-500 bg-red-500/10 text-red-700";
+            else cls += " border-gray-200 text-gray-400";
           } else {
             cls +=
-              " border-gray-700 hover:border-blue-500/50 hover:bg-gray-800/50 cursor-pointer text-gray-200";
+              " border-gray-200 hover:border-blue-500/50 hover:bg-gray-50 cursor-pointer text-gray-700";
           }
           return (
             <button key={`${opt}-${idx}`} className={cls} onClick={() => handleSelect(opt)}>
-              <span className="mr-3 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-800 text-xs text-gray-400">
+              <span className="mr-3 inline-flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs text-gray-500">
                 {String.fromCharCode(65 + idx)}
               </span>
               {opt}
@@ -444,9 +444,9 @@ function QuizContent() {
           {/* Correct feedback */}
           {selected === q.correctAnswer && (
             <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4 text-center">
-              <p className="text-green-400 font-medium">Correct!</p>
+              <p className="text-green-600 font-medium">Correct!</p>
               {q.meaningEn && (
-                <p className="text-sm text-gray-400 mt-1">{q.meaningEn}</p>
+                <p className="text-sm text-gray-500 mt-1">{q.meaningEn}</p>
               )}
             </div>
           )}
@@ -454,16 +454,16 @@ function QuizContent() {
           {/* Wrong feedback */}
           {selected !== q.correctAnswer && (
             <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 space-y-2">
-              <p className="text-red-400 font-medium">Incorrect</p>
+              <p className="text-red-600 font-medium">Incorrect</p>
               <p className="text-sm">
-                <span className="text-gray-400">Correct: </span>
-                <span className="text-green-400 font-medium">{q.correctAnswer}</span>
+                <span className="text-gray-500">Correct: </span>
+                <span className="text-green-600 font-medium">{q.correctAnswer}</span>
               </p>
               {q.meaningEn && (
-                <p className="text-xs text-gray-500">{q.meaningEn}</p>
+                <p className="text-xs text-gray-400">{q.meaningEn}</p>
               )}
               {q.example && (
-                <p className="text-xs text-gray-500 italic mt-1">
+                <p className="text-xs text-gray-400 italic mt-1">
                   &ldquo;{q.example}&rdquo;
                 </p>
               )}
@@ -475,7 +475,7 @@ function QuizContent() {
             <button
               onClick={handleExplain}
               disabled={explaining}
-              className="w-full rounded-xl border border-yellow-600/40 py-2.5 text-sm text-yellow-400 hover:bg-yellow-600/10 disabled:opacity-50"
+              className="w-full rounded-xl border border-yellow-500/40 py-2.5 text-sm text-yellow-600 hover:bg-yellow-50 disabled:opacity-50"
             >
               {explaining ? "Generating explanation..." : "AI Explain"}
             </button>
@@ -490,7 +490,7 @@ function QuizContent() {
           {/* Next button */}
           <button
             onClick={handleNext}
-            className="w-full rounded-xl bg-blue-600 py-3.5 font-semibold hover:bg-blue-500"
+            className="w-full rounded-xl bg-blue-600 py-3.5 font-semibold text-white hover:bg-blue-500"
           >
             {current + 1 >= questions.length ? "See Results" : "Next Question"}
           </button>

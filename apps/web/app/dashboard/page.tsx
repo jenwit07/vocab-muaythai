@@ -40,7 +40,7 @@ const STATUS_CONFIG = {
   weak: { label: "Weak", color: "text-red-400", bg: "bg-red-500/10", border: "border-red-500/30", bar: "bg-red-500" },
   needs_work: { label: "Needs Work", color: "text-yellow-400", bg: "bg-yellow-500/10", border: "border-yellow-500/30", bar: "bg-yellow-500" },
   strong: { label: "Strong", color: "text-green-400", bg: "bg-green-500/10", border: "border-green-500/30", bar: "bg-green-500" },
-  not_started: { label: "Not Started", color: "text-gray-500", bg: "bg-gray-500/10", border: "border-gray-700", bar: "bg-gray-600" },
+  not_started: { label: "Not Started", color: "text-gray-400", bg: "bg-gray-100", border: "border-gray-200", bar: "bg-gray-300" },
 };
 
 export default function DashboardPage() {
@@ -57,7 +57,7 @@ export default function DashboardPage() {
   }, []);
 
   if (loading || !data) {
-    return <div className="pt-12 text-center text-gray-400">Loading dashboard...</div>;
+    return <div className="pt-12 text-center text-gray-500">Loading dashboard...</div>;
   }
 
   const { overview, categories, suggestions, topWeakWords } = data;
@@ -67,7 +67,7 @@ export default function DashboardPage() {
     <div className="space-y-8 pt-4">
       <div>
         <h1 className="text-2xl font-bold">Your Progress</h1>
-        <p className="text-gray-400">Track your strengths and weaknesses across TOEIC categories</p>
+        <p className="text-gray-500">Track your strengths and weaknesses across TOEIC categories</p>
       </div>
 
       {/* Overview Cards */}
@@ -109,7 +109,7 @@ export default function DashboardPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <p className="font-semibold capitalize">{cat.label}</p>
-                      <p className="text-xs text-gray-500">{cat.totalVocab} words</p>
+                      <p className="text-xs text-gray-400">{cat.totalVocab} words</p>
                     </div>
                     <span className={`rounded-full px-2 py-0.5 text-xs ${cfg.color} ${cfg.bg}`}>
                       {cfg.label}
@@ -117,11 +117,11 @@ export default function DashboardPage() {
                   </div>
 
                   {cat.status === "not_started" ? (
-                    <p className="text-sm text-gray-400">You haven&apos;t tried this category yet</p>
+                    <p className="text-sm text-gray-500">You haven&apos;t tried this category yet</p>
                   ) : (
                     <>
                       <div className="flex items-center gap-2">
-                        <div className="h-2 flex-1 rounded-full bg-gray-800">
+                        <div className="h-2 flex-1 rounded-full bg-gray-100">
                           <div
                             className={`h-2 rounded-full ${cfg.bar}`}
                             style={{ width: `${cat.accuracy ?? 0}%` }}
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                         </div>
                         <span className="text-sm font-medium">{cat.accuracy}%</span>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400">
                         {cat.correct}/{cat.attempted} correct
                       </p>
                     </>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
 
                   <a
                     href={`/quiz?category=${cat.category}`}
-                    className="block w-full rounded-lg bg-blue-600 py-2 text-center text-sm font-medium hover:bg-blue-500"
+                    className="block w-full rounded-lg bg-blue-600 py-2 text-center text-sm font-medium text-white hover:bg-blue-500"
                   >
                     {cat.status === "not_started" ? "Start" : "Practice"} this category
                   </a>
@@ -157,7 +157,7 @@ export default function DashboardPage() {
             return (
               <div
                 key={cat.category}
-                className="flex items-center gap-4 rounded-lg border border-gray-800 p-3"
+                className="flex items-center gap-4 rounded-lg border border-gray-200 p-3"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-3 shrink-0">
                   {cat.accuracy !== null && (
                     <div className="flex items-center gap-2 w-32">
-                      <div className="h-1.5 flex-1 rounded-full bg-gray-800">
+                      <div className="h-1.5 flex-1 rounded-full bg-gray-100">
                         <div
                           className={`h-1.5 rounded-full ${cfg.bar}`}
                           style={{ width: `${cat.accuracy}%` }}
@@ -183,7 +183,7 @@ export default function DashboardPage() {
                   )}
                   <a
                     href={`/quiz?category=${cat.category}`}
-                    className="rounded-lg border border-gray-700 px-3 py-1.5 text-xs hover:border-gray-500"
+                    className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs hover:border-gray-400"
                   >
                     Quiz
                   </a>
@@ -199,7 +199,7 @@ export default function DashboardPage() {
         <section className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Words You Struggle With</h2>
-            <a href="/review" className="text-sm text-blue-400 hover:text-blue-300">
+            <a href="/review" className="text-sm text-blue-600 hover:text-blue-500">
               View all &rarr;
             </a>
           </div>
@@ -207,17 +207,17 @@ export default function DashboardPage() {
             {topWeakWords.map((w) => (
               <div
                 key={w.word}
-                className="flex items-center justify-between rounded-lg border border-gray-800 p-3"
+                className="flex items-center justify-between rounded-lg border border-gray-200 p-3"
               >
                 <div>
                   <p className="font-medium">{w.word}</p>
-                  <p className="text-xs text-gray-400">{w.meaningTh}</p>
+                  <p className="text-xs text-gray-500">{w.meaningTh}</p>
                 </div>
                 <div className="text-right">
                   <span className="rounded bg-red-500/10 px-2 py-0.5 text-xs text-red-400">
                     {w.wrongCount}x wrong
                   </span>
-                  <p className="mt-1 text-xs text-gray-500 capitalize">
+                  <p className="mt-1 text-xs text-gray-400 capitalize">
                     {w.category.replace(/_/g, " ")}
                   </p>
                 </div>
@@ -229,14 +229,14 @@ export default function DashboardPage() {
 
       {/* Empty state */}
       {!hasData && (
-        <div className="rounded-xl border border-gray-800 p-8 text-center space-y-4">
-          <p className="text-lg text-gray-400">No quiz data yet</p>
-          <p className="text-sm text-gray-500">
+        <div className="rounded-xl border border-gray-200 p-8 text-center space-y-4">
+          <p className="text-lg text-gray-500">No quiz data yet</p>
+          <p className="text-sm text-gray-400">
             Take a quiz to see your strengths and weaknesses across TOEIC categories
           </p>
           <a
             href="/quiz"
-            className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium hover:bg-blue-500"
+            className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-500"
           >
             Start Your First Quiz
           </a>
@@ -248,10 +248,10 @@ export default function DashboardPage() {
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-gray-800 p-4 space-y-1">
-      <p className="text-xs text-gray-500">{label}</p>
+    <div className="rounded-xl border border-gray-200 p-4 space-y-1">
+      <p className="text-xs text-gray-400">{label}</p>
       <p className="text-2xl font-bold">{value}</p>
-      <p className="text-xs text-gray-500">{sub}</p>
+      <p className="text-xs text-gray-400">{sub}</p>
     </div>
   );
 }

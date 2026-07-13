@@ -74,11 +74,11 @@ export default function LearnPage() {
     return (
       <div className="space-y-6 pt-8">
         <div className="space-y-2">
-          <div className="h-8 w-48 rounded bg-gray-800 animate-pulse" />
-          <div className="h-5 w-80 rounded bg-gray-800/50 animate-pulse" />
+          <div className="h-8 w-48 rounded bg-gray-100 animate-pulse" />
+          <div className="h-5 w-80 rounded bg-gray-100 animate-pulse" />
         </div>
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-40 rounded-xl border border-gray-800 bg-gray-900 animate-pulse" />
+          <div key={i} className="h-40 rounded-xl border border-gray-200 bg-gray-50 animate-pulse" />
         ))}
       </div>
     );
@@ -89,18 +89,18 @@ export default function LearnPage() {
       <div className="space-y-6 pt-8">
         <div>
           <h1 className="text-2xl font-bold">Learn from Mistakes</h1>
-          <p className="text-gray-400">AI-powered lessons based on your confusion patterns</p>
+          <p className="text-gray-500">AI-powered lessons based on your confusion patterns</p>
         </div>
-        <div className="rounded-xl border border-gray-800 p-12 text-center space-y-4">
+        <div className="rounded-xl border border-gray-200 p-12 text-center space-y-4">
           <div className="text-4xl">🎯</div>
-          <p className="text-lg text-gray-400">No confusion clusters yet</p>
-          <p className="text-sm text-gray-500">
+          <p className="text-lg text-gray-500">No confusion clusters yet</p>
+          <p className="text-sm text-gray-400">
             Take some quizzes first — when you make mistakes, the system will detect
             patterns and create personalized lessons for you.
           </p>
           <a
             href="/quiz"
-            className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium hover:bg-blue-500"
+            className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-500"
           >
             Start a Quiz
           </a>
@@ -113,7 +113,7 @@ export default function LearnPage() {
     <div className="space-y-6 pt-8">
       <div>
         <h1 className="text-2xl font-bold">Learn from Mistakes</h1>
-        <p className="text-gray-400">
+        <p className="text-gray-500">
           {clusters.length} confusion {clusters.length === 1 ? "cluster" : "clusters"} detected from your quiz history
         </p>
       </div>
@@ -128,7 +128,7 @@ export default function LearnPage() {
           return (
             <div
               key={cluster.id}
-              className={`rounded-xl border ${isExpanded ? cfg.border : "border-gray-800"} bg-gray-900 overflow-hidden transition-colors duration-200`}
+              className={`rounded-xl border ${isExpanded ? cfg.border : "border-gray-200"} bg-white overflow-hidden transition-colors duration-200`}
             >
               {/* Header — always visible, fixed height */}
               <button
@@ -150,9 +150,9 @@ export default function LearnPage() {
                       {cluster.words.map((w) => (
                         <span
                           key={w.word}
-                          className="inline-flex items-center gap-1 rounded-full bg-gray-800 px-2.5 py-1 text-xs"
+                          className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs"
                         >
-                          <span className="font-medium text-gray-200">{w.word}</span>
+                          <span className="font-medium text-gray-700">{w.word}</span>
                           {w.wrongCount > 0 && (
                             <span className="text-red-400/70">{w.wrongCount}x</span>
                           )}
@@ -162,7 +162,7 @@ export default function LearnPage() {
                   </div>
 
                   {/* Expand arrow */}
-                  <div className={`shrink-0 mt-1 text-gray-500 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
+                  <div className={`shrink-0 mt-1 text-gray-400 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
@@ -177,22 +177,22 @@ export default function LearnPage() {
                 <div className="overflow-hidden">
                   <div
                     ref={(el) => { lessonRef.current[cluster.id] = el; }}
-                    className="border-t border-gray-800 px-5 pb-5 pt-4 space-y-4"
+                    className="border-t border-gray-200 px-5 pb-5 pt-4 space-y-4"
                   >
                     {/* Word comparison table — always show */}
                     <div className="space-y-1">
                       {cluster.words.map((w) => (
                         <div
                           key={w.word}
-                          className="flex items-baseline gap-3 rounded-lg bg-gray-800/40 px-3 py-2"
+                          className="flex items-baseline gap-3 rounded-lg bg-gray-100 px-3 py-2"
                         >
-                          <span className="font-mono font-semibold text-blue-300 w-28 shrink-0">
+                          <span className="font-mono font-semibold text-blue-600 w-28 shrink-0">
                             {w.word}
                           </span>
-                          <span className="text-xs text-gray-500 w-10 shrink-0">
+                          <span className="text-xs text-gray-400 w-10 shrink-0">
                             {w.pos}
                           </span>
-                          <span className="text-sm text-gray-300 flex-1">
+                          <span className="text-sm text-gray-700 flex-1">
                             {w.meaningTh}
                           </span>
                         </div>
@@ -202,7 +202,7 @@ export default function LearnPage() {
                     {/* Lesson content */}
                     <div className="min-h-[120px]">
                       {isLoading && (
-                        <div className="flex items-center gap-3 py-8 justify-center text-gray-500">
+                        <div className="flex items-center gap-3 py-8 justify-center text-gray-400">
                           <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" className="opacity-20" />
                             <path d="M12 2a10 10 0 019.95 9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
@@ -212,9 +212,9 @@ export default function LearnPage() {
                       )}
 
                       {!isLoading && lesson && (
-                        <div className="prose prose-sm prose-invert max-w-none">
+                        <div className="prose prose-sm max-w-none">
                           <div
-                            className="text-sm leading-relaxed text-gray-300 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-100 [&_h2]:mt-4 [&_h2]:mb-2 [&_strong]:text-blue-300 [&_p]:mb-2"
+                            className="text-sm leading-relaxed text-gray-700 [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-gray-900 [&_h2]:mt-4 [&_h2]:mb-2 [&_strong]:text-blue-600 [&_p]:mb-2"
                             dangerouslySetInnerHTML={{
                               __html: formatMarkdown(lesson),
                             }}
@@ -229,7 +229,7 @@ export default function LearnPage() {
                               e.stopPropagation();
                               handleGenerateLesson(cluster);
                             }}
-                            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium hover:bg-blue-500"
+                            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-500"
                           >
                             Generate AI Lesson
                           </button>
@@ -252,9 +252,9 @@ function formatMarkdown(text: string): string {
     .replace(/## (.*)/g, "<h2>$1</h2>")
     .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
     .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/`(.*?)`/g, '<code class="rounded bg-gray-800 px-1 py-0.5 text-xs">$1</code>')
-    .replace(/^- (.*)/gm, '<div class="flex gap-2 mb-1"><span class="text-gray-600 shrink-0">•</span><span>$1</span></div>')
-    .replace(/^(\d+)\. (.*)/gm, '<div class="flex gap-2 mb-1"><span class="text-gray-500 shrink-0">$1.</span><span>$2</span></div>')
+    .replace(/`(.*?)`/g, '<code class="rounded bg-gray-100 px-1 py-0.5 text-xs">$1</code>')
+    .replace(/^- (.*)/gm, '<div class="flex gap-2 mb-1"><span class="text-gray-400 shrink-0">•</span><span>$1</span></div>')
+    .replace(/^(\d+)\. (.*)/gm, '<div class="flex gap-2 mb-1"><span class="text-gray-400 shrink-0">$1.</span><span>$2</span></div>')
     .replace(/\n\n/g, "</p><p>")
     .replace(/\n/g, "<br>");
 }

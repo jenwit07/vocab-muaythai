@@ -50,17 +50,17 @@ export default function ReviewPage() {
   }
 
   if (loading) {
-    return <div className="pt-12 text-center text-gray-400">Loading review...</div>;
+    return <div className="pt-12 text-center text-gray-500">Loading review...</div>;
   }
 
   if (words.length === 0) {
     return (
       <div className="space-y-4 pt-12 text-center">
         <h1 className="text-2xl font-bold">Daily Review</h1>
-        <p className="text-gray-400">{message ?? "No weak words yet. Take a quiz first!"}</p>
+        <p className="text-gray-500">{message ?? "No weak words yet. Take a quiz first!"}</p>
         <a
           href="/quiz"
-          className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium hover:bg-blue-500"
+          className="inline-block rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-500"
         >
           Start Quiz
         </a>
@@ -72,7 +72,7 @@ export default function ReviewPage() {
     <div className="space-y-6 pt-8">
       <div>
         <h1 className="text-2xl font-bold">Daily Review</h1>
-        <p className="text-gray-400">
+        <p className="text-gray-500">
           {words.length} words to focus on, sorted by priority
         </p>
       </div>
@@ -81,14 +81,14 @@ export default function ReviewPage() {
         {words.map((w) => (
           <div
             key={w.word}
-            className="rounded-xl border border-gray-800 p-4 space-y-3"
+            className="rounded-xl border border-gray-200 p-4 space-y-3"
           >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-lg font-semibold">{w.word}</p>
-                <p className="text-sm text-gray-400">{w.meaningTh}</p>
+                <p className="text-sm text-gray-500">{w.meaningTh}</p>
                 {w.meaningEn && (
-                  <p className="text-xs text-gray-500">{w.meaningEn}</p>
+                  <p className="text-xs text-gray-400">{w.meaningEn}</p>
                 )}
               </div>
               <div className="text-right space-y-1">
@@ -100,17 +100,17 @@ export default function ReviewPage() {
                     {w.correctCount} right
                   </span>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-400">
                   {w.category.replace(/_/g, " ")}
                 </p>
                 <div className="flex items-center gap-1">
-                  <div className="h-1.5 w-16 rounded-full bg-gray-800">
+                  <div className="h-1.5 w-16 rounded-full bg-gray-100">
                     <div
                       className="h-1.5 rounded-full bg-blue-500"
                       style={{ width: `${w.masteryScore}%` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-500">{w.masteryScore}%</span>
+                  <span className="text-xs text-gray-400">{w.masteryScore}%</span>
                 </div>
               </div>
             </div>
@@ -118,7 +118,7 @@ export default function ReviewPage() {
             {/* Confused with */}
             {w.confusedWith.length > 0 && (
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-xs text-gray-500">Often confused with:</span>
+                <span className="text-xs text-gray-400">Often confused with:</span>
                 {w.confusedWith.map((cw) => (
                   <button
                     key={cw}

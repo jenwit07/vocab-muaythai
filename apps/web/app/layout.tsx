@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TOEIC Vocab Coach",
-  description: "Personalized TOEIC vocabulary learning — find your weak spots and review smarter",
+  title: "Vocab Bubble Pop",
+  description: "Learn TOEIC vocabulary through fun bubble pop games — solo, vs friends, or ranked online",
 };
 
 export default function RootLayout({
@@ -13,19 +13,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-950 text-gray-100 antialiased">
-        <nav id="main-nav" className="border-b border-gray-800 px-6 py-4">
+      <body className="min-h-screen bg-white text-gray-900 antialiased">
+        <nav id="main-nav" className="border-b border-gray-200 px-4 sm:px-6 py-3">
           <div className="mx-auto flex max-w-5xl items-center justify-between">
-            <a href="/" className="text-lg font-bold">
-              TOEIC Vocab Coach
+            <a href="/" className="font-black text-lg">
+              <span className="text-green-600">Bubble</span>{" "}
+              <span className="text-yellow-500">Pop</span>
             </a>
-            <div className="flex gap-6 text-sm text-gray-400">
-              <a href="/dashboard" className="hover:text-white">Dashboard</a>
-              <a href="/quiz" className="hover:text-white">Quiz</a>
-              <a href="/explore" className="hover:text-white">Explore</a>
-              <a href="/game" className="hover:text-white text-yellow-400/80">Game</a>
-              <a href="/learn" className="hover:text-white">Learn</a>
-              <a href="/review" className="hover:text-white">Review</a>
+            <div className="flex gap-4 sm:gap-6 text-sm text-gray-500">
+              <a href="/" className="hover:text-gray-900">Play</a>
+              <a href="/explore" className="hover:text-gray-900">Explore</a>
+              <a href="/quiz" className="hover:text-gray-900">Quiz</a>
+              <a href="/dashboard" className="hover:text-gray-900">Stats</a>
+              <a href="/learn" className="hover:text-gray-900 hidden sm:block">Learn</a>
             </div>
           </div>
         </nav>
