@@ -216,10 +216,14 @@ function PlayScreen({ vocab, onEnd, isMobile }: { vocab: VocabItem[]; onEnd: () 
   const startTimeRef = useRef(Date.now());
   const spawnTimerRef = useRef<ReturnType<typeof setInterval>>();
   const bubbleIdRef = useRef(0);
+  const wrongWordsRef = useRef<Set<string>>(new Set());
 
   const spawnBubble = useCallback(() => {
     if (vocab.length < 4) return;
-    const item = vocab[Math.floor(Math.random() * vocab.length)];
+    // Filter out words already wrong in this round + already on screen
+    const available = vocab.filter((v) => !wrongWordsRef.current.has(v.word));
+    if (available.length < 4) return; // fallback: not enough words left
+    const item = available[Math.floor(Math.random() * available.length)];
     const id = `b-${bubbleIdRef.current++}`;
 
     const newBubble: GameBubble = {
@@ -351,6 +355,7 @@ function PlayScreen({ vocab, onEnd, isMobile }: { vocab: VocabItem[]; onEnd: () 
       setCombo(0);
       setWrong((w) => w + 1);
       setWordsWrong((prev) => [...prev, { word: activeBubble.word, meaningTh: activeBubble.meaningTh }]);
+      wrongWordsRef.current.add(activeBubble.word);
       // Flash the correct answer
       setFlashMsg({ word: activeBubble.word, meaningTh: activeBubble.meaningTh });
       setTimeout(() => setFlashMsg(null), 2000);
