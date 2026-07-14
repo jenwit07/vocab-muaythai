@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { SnatchOverlay, pickSnatchTaunt } from "../_components/SnatchOverlay";
 
 // --- Types ---
 type PlayerInfo = {
@@ -26,6 +27,7 @@ type BubbleData = {
   popping: boolean;
   poppedBy: string | null;
   shaking: boolean;
+  claimed?: boolean;
 };
 
 type GamePhase = "menu" | "searching" | "match_found" | "countdown" | "playing" | "result";
@@ -104,6 +106,8 @@ export default function OnlineGamePage() {
   const [bubbles, setBubbles] = useState<Map<string, BubbleData>>(new Map());
   const [activeBubble, setActiveBubble] = useState<BubbleData | null>(null);
   const activeBubbleRef = useRef<BubbleData | null>(null);
+  const myIdRef = useRef("");
+  const [snatch, setSnatch] = useState<{ emoji: string; text: string } | null>(null);
   const [answered, setAnswered] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60000);
   const [popups, setPopups] = useState<{ id: string; x: number; y: number; text: string; color: string; at: number }[]>([]);
@@ -140,6 +144,7 @@ export default function OnlineGamePage() {
 
         case "match_found":
           setMyId(msg.playerId);
+          myIdRef.current = msg.playerId;
           setOpponent(msg.opponent);
           setPlayers(msg.players);
           setPhase("match_found");
@@ -160,7 +165,7 @@ export default function OnlineGamePage() {
         case "bubble_spawn":
           setBubbles((prev) => {
             const next = new Map(prev);
-            next.set(msg.bubble.id, { ...msg.bubble, spawnedAt: Date.now(), popping: false, poppedBy: null, shaking: false });
+            next.set(msg.bubble.id, { ...msg.bubble, spawnedAt: Date.now(), popping: false, poppedBy: null, shaking: false, claimed: false });
             return next;
           });
           break;
@@ -179,14 +184,31 @@ export default function OnlineGamePage() {
           setPopups((p) => [...p, {
             id: `p-${Date.now()}`, x: bubbles.get(msg.bubbleId)?.x ?? 50, y: bubbles.get(msg.bubbleId)?.y ?? 50,
             text: `${msg.playerName} +${msg.points}${msg.multiplier > 1 ? ` x${msg.multiplier}` : ""}`,
-            color: msg.playerId === myId ? "#16a34a" : "#3b82f6", at: Date.now(),
+            color: msg.playerId === myIdRef.current ? "#16a34a" : "#3b82f6", at: Date.now(),
           }]);
-          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
+          // Our open bubble got answered — by us (close) or by the opponent (snatched!)
+          if (activeBubbleRef.current?.id === msg.bubbleId) {
+            if (msg.playerId !== myIdRef.current) {
+              setSnatch(pickSnatchTaunt("stolen", msg.playerName));
+              setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+            } else {
+              closeModal();
+            }
+          }
+          break;
+
+        case "bubble_claimed":
+          setBubbles((prev) => {
+            const n = new Map(prev);
+            const b = n.get(msg.bubbleId);
+            if (b) n.set(msg.bubbleId, { ...b, claimed: true });
+            return n;
+          });
           break;
 
         case "bubble_expired":
+          // Claimed bubbles never expire server-side; just drop it from the board.
           setBubbles((prev) => { const n = new Map(prev); n.delete(msg.bubbleId); return n; });
-          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
           break;
 
         case "bubble_gone":
@@ -195,7 +217,7 @@ export default function OnlineGamePage() {
 
         case "answer_wrong_remove":
           setPlayers(msg.players);
-          if (msg.playerId === myId) {
+          if (msg.playerId === myIdRef.current) {
             setFlashMsg({ word: msg.correctAnswer, meaningTh: msg.correctAnswer });
             setTimeout(() => setFlashMsg(null), 2000);
           }
@@ -218,7 +240,13 @@ export default function OnlineGamePage() {
             id: `p-${Date.now()}`, x: 50, y: 50,
             text: `${msg.playerName} ${msg.penalty}`, color: "#ef4444", at: Date.now(),
           }]);
-          setTimeout(() => closeModal(), 600);
+          // Opponent grabbed our open bubble but blew it → cheeky "fumbled" reaction
+          if (activeBubbleRef.current?.id === msg.bubbleId && msg.playerId !== myIdRef.current) {
+            setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
+            setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+          } else {
+            setTimeout(() => closeModal(), 600);
+          }
           break;
 
         case "score_update":
@@ -282,6 +310,8 @@ export default function OnlineGamePage() {
     setActiveBubble(bubble);
     activeBubbleRef.current = bubble;
     setAnswered(null);
+    // Claim it so the server stops expiring it — tapping in time counts
+    sendMsg({ type: "claim_bubble", bubbleId: bubble.id });
   }
 
   function handleAnswer(choice: string) {
@@ -580,6 +610,9 @@ export default function OnlineGamePage() {
             </div>
           </div>
         )}
+
+        {/* Snatched reaction */}
+        {snatch && <SnatchOverlay emoji={snatch.emoji} text={snatch.text} />}
       </div>
 
       <style jsx global>{`
@@ -630,7 +663,7 @@ function OnlineBubble({ bubble, disabled, onClick, isMobile }: { bubble: BubbleD
 
   const age = Date.now() - bubble.spawnedAt;
   const fadeStart = bubble.lifetime - 2000;
-  const opacity = bubble.popping ? 0 : age > fadeStart ? Math.max(0.3, 1 - (age - fadeStart) / 2000) : 1;
+  const opacity = bubble.popping ? 0 : bubble.claimed ? 1 : age > fadeStart ? Math.max(0.3, 1 - (age - fadeStart) / 2000) : 1;
   const fontSize = Math.max(7, Math.min(13, (size - 18) / (bubble.word.length * 0.55)));
 
   return (

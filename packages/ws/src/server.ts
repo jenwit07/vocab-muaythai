@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from "ws";
+import { getExpiredBubbleIds } from "./bubble-lifecycle";
 
 // --- Types ---
 type VocabItem = { word: string; meaningTh: string; difficulty: string; category: string };
@@ -13,6 +14,7 @@ type GameBubble = {
   choices: string[];
   spawnedAt: number;
   lifetime: number;
+  claimed: boolean;
 };
 
 type Player = {
@@ -146,6 +148,7 @@ function spawnBubble(room: Room) {
     id, word: item.word, meaningTh: item.meaningTh, difficulty: item.difficulty,
     x: 6 + Math.random() * 88, y: 8 + Math.random() * 78,
     choices, spawnedAt: Date.now(), lifetime: BUBBLE_LIFETIME + Math.random() * 2000,
+    claimed: false,
   };
 
   room.bubbles.set(id, bubble);
@@ -176,11 +179,9 @@ function startGame(room: Room) {
 
   room.expireTimer = setInterval(() => {
     const now = Date.now();
-    for (const [id, bubble] of room.bubbles) {
-      if (now - bubble.spawnedAt > bubble.lifetime) {
-        room.bubbles.delete(id);
-        broadcast(room, { type: "bubble_expired", bubbleId: id });
-      }
+    for (const id of getExpiredBubbleIds(room.bubbles.values(), now)) {
+      room.bubbles.delete(id);
+      broadcast(room, { type: "bubble_expired", bubbleId: id });
     }
   }, 300);
 
@@ -491,6 +492,19 @@ wss.on("connection", (ws) => {
           correctAnswer: bubble.meaningTh, players: getPlayersInfo(room),
         });
       }
+    }
+
+    // --- Claim Bubble (lock so it stops expiring; opponent can still snatch it) ---
+    if (type === "claim_bubble") {
+      const resolvedRoomId = currentRoomId ?? playerRoomMap.get(playerId);
+      const room = resolvedRoomId ? rooms.get(resolvedRoomId) : null;
+      if (!room || room.gameState !== "playing") return;
+
+      const bubble = room.bubbles.get(msg.bubbleId as string);
+      if (!bubble || bubble.claimed) return;
+
+      bubble.claimed = true;
+      broadcast(room, { type: "bubble_claimed", bubbleId: bubble.id });
     }
   });
 

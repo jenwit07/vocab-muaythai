@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import { SnatchOverlay, pickSnatchTaunt } from "../_components/SnatchOverlay";
 
 // --- Types ---
 type PlayerInfo = {
@@ -24,6 +25,7 @@ type BubbleData = {
   popping: boolean;
   poppedBy: string | null;
   shaking: boolean;
+  claimed?: boolean;
 };
 
 type GamePhase = "connect" | "lobby" | "countdown" | "playing" | "result";
@@ -66,6 +68,8 @@ export default function MultiPlayerGame() {
   const [bubbles, setBubbles] = useState<Map<string, BubbleData>>(new Map());
   const [activeBubble, setActiveBubble] = useState<BubbleData | null>(null);
   const activeBubbleRef = useRef<BubbleData | null>(null);
+  const myIdRef = useRef("");
+  const [snatch, setSnatch] = useState<{ emoji: string; text: string } | null>(null);
   const [answered, setAnswered] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60000);
   const [countdown, setCountdown] = useState(0);
@@ -94,6 +98,7 @@ export default function MultiPlayerGame() {
         case "room_created":
           setRoomId(msg.roomId);
           setMyId(msg.playerId);
+          myIdRef.current = msg.playerId;
           setPlayers(msg.players);
           setPhase("lobby");
           break;
@@ -101,6 +106,7 @@ export default function MultiPlayerGame() {
         case "room_joined":
           setRoomId(msg.roomId);
           setMyId(msg.playerId);
+          myIdRef.current = msg.playerId;
           setPlayers(msg.players);
           setPhase("lobby");
           break;
@@ -132,6 +138,7 @@ export default function MultiPlayerGame() {
               popping: false,
               poppedBy: null,
               shaking: false,
+              claimed: false,
             });
             return next;
           });
@@ -158,19 +165,34 @@ export default function MultiPlayerGame() {
               x: b?.x ?? 50,
               y: b?.y ?? 50,
               text: `${msg.playerName} +${msg.points}${msg.multiplier > 1 ? ` x${msg.multiplier}` : ""}`,
-              color: msg.playerId === myId ? "#4ade80" : "#60a5fa",
+              color: msg.playerId === myIdRef.current ? "#4ade80" : "#60a5fa",
               at: Date.now(),
             }];
           });
-          // Close choice overlay if this was our active bubble
+          // Our open bubble got answered — by us (close) or by the opponent (snatched!)
           if (activeBubbleRef.current?.id === msg.bubbleId) {
-            closeModal();
+            if (msg.playerId !== myIdRef.current) {
+              setSnatch(pickSnatchTaunt("stolen", msg.playerName));
+              setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+            } else {
+              closeModal();
+            }
           }
           break;
 
+        case "bubble_claimed":
+          setBubbles((prev) => {
+            const n = new Map(prev);
+            const b = n.get(msg.bubbleId);
+            if (b) n.set(msg.bubbleId, { ...b, claimed: true });
+            return n;
+          });
+          break;
+
         case "bubble_expired":
+          // A claimed bubble never expires server-side, so a claimed modal stays
+          // open. Just drop the bubble from the board.
           setBubbles((prev) => { const n = new Map(prev); n.delete(msg.bubbleId); return n; });
-          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
           break;
 
         case "bubble_gone":
@@ -200,7 +222,13 @@ export default function MultiPlayerGame() {
             id: `p-${Date.now()}`, x: bubbles.get(msg.bubbleId)?.x ?? 50, y: bubbles.get(msg.bubbleId)?.y ?? 50,
             text: `${msg.playerName} ${msg.penalty}`, color: "#ef4444", at: Date.now(),
           }]);
-          setTimeout(() => closeModal(), 800);
+          // Opponent grabbed our open bubble but blew it → cheeky "fumbled" reaction
+          if (activeBubbleRef.current?.id === msg.bubbleId && msg.playerId !== myIdRef.current) {
+            setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
+            setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+          } else {
+            setTimeout(() => closeModal(), 800);
+          }
           break;
 
         case "tick":
@@ -242,6 +270,8 @@ export default function MultiPlayerGame() {
     setActiveBubble(bubble);
     activeBubbleRef.current = bubble;
     setAnswered(null);
+    // Claim it so the server stops expiring it — tapping in time counts
+    sendMsg({ type: "claim_bubble", bubbleId: bubble.id });
   }
 
   function handleAnswer(choice: string) {
@@ -533,6 +563,9 @@ export default function MultiPlayerGame() {
             </div>
           </div>
         )}
+
+        {/* Snatched reaction */}
+        {snatch && <SnatchOverlay emoji={snatch.emoji} text={snatch.text} />}
       </div>
 
       <style jsx global>{`
@@ -583,7 +616,7 @@ function MultiBubble({ bubble, disabled, onClick }: { bubble: BubbleData; disabl
   // Fade as lifetime runs out
   const age = Date.now() - bubble.spawnedAt;
   const fadeStart = bubble.lifetime - 2000;
-  const opacity = bubble.popping ? 0 : age > fadeStart ? Math.max(0.3, 1 - (age - fadeStart) / 2000) : 1;
+  const opacity = bubble.popping ? 0 : bubble.claimed ? 1 : age > fadeStart ? Math.max(0.3, 1 - (age - fadeStart) / 2000) : 1;
 
   return (
     <button
