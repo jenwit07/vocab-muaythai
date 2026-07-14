@@ -52,7 +52,7 @@ type QueueEntry = {
 // --- Constants ---
 const PORT = 3333;
 const GAME_DURATION = 60_000;
-const BUBBLE_LIFETIME = 9_000;
+const BUBBLE_LIFETIME = 13_000;
 const SPAWN_INTERVAL = 1_400;
 const MAX_BUBBLES = 10;
 
