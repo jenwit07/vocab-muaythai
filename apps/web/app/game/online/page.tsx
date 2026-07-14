@@ -103,6 +103,7 @@ export default function OnlineGamePage() {
   const [countdown, setCountdown] = useState(0);
   const [bubbles, setBubbles] = useState<Map<string, BubbleData>>(new Map());
   const [activeBubble, setActiveBubble] = useState<BubbleData | null>(null);
+  const activeBubbleRef = useRef<BubbleData | null>(null);
   const [answered, setAnswered] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60000);
   const [popups, setPopups] = useState<{ id: string; x: number; y: number; text: string; color: string; at: number }[]>([]);
@@ -180,22 +181,20 @@ export default function OnlineGamePage() {
             text: `${msg.playerName} +${msg.points}${msg.multiplier > 1 ? ` x${msg.multiplier}` : ""}`,
             color: msg.playerId === myId ? "#16a34a" : "#3b82f6", at: Date.now(),
           }]);
-          if (activeBubble?.id === msg.bubbleId) { setActiveBubble(null); setAnswered(null); }
+          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
           break;
 
         case "bubble_expired":
           setBubbles((prev) => { const n = new Map(prev); n.delete(msg.bubbleId); return n; });
-          if (activeBubble?.id === msg.bubbleId) { setActiveBubble(null); setAnswered(null); }
+          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
           break;
 
         case "bubble_gone":
-          setActiveBubble(null); setAnswered(null);
+          closeModal();
           break;
 
         case "answer_wrong_remove":
           setPlayers(msg.players);
-          setAnswered(msg.correctAnswer);
-          // Flash correct answer if it's our mistake
           if (msg.playerId === myId) {
             setFlashMsg({ word: msg.correctAnswer, meaningTh: msg.correctAnswer });
             setTimeout(() => setFlashMsg(null), 2000);
@@ -216,10 +215,10 @@ export default function OnlineGamePage() {
             return n;
           });
           setPopups((p) => [...p, {
-            id: `p-${Date.now()}`, x: bubbles.get(msg.bubbleId)?.x ?? 50, y: bubbles.get(msg.bubbleId)?.y ?? 50,
+            id: `p-${Date.now()}`, x: 50, y: 50,
             text: `${msg.playerName} ${msg.penalty}`, color: "#ef4444", at: Date.now(),
           }]);
-          setTimeout(() => { setActiveBubble(null); setAnswered(null); }, 600);
+          setTimeout(() => closeModal(), 600);
           break;
 
         case "score_update":
@@ -266,21 +265,31 @@ export default function OnlineGamePage() {
     };
 
     ws.onerror = () => setError("Cannot connect to game server");
-  }, [nameInput, profile, phase, myId, activeBubble, bubbles]);
+  }, [nameInput, profile, phase, myId]);
 
   function sendMsg(msg: Record<string, unknown>) {
     if (wsRef.current?.readyState === WebSocket.OPEN) wsRef.current.send(JSON.stringify(msg));
   }
 
+  function closeModal() {
+    setActiveBubble(null);
+    activeBubbleRef.current = null;
+    setAnswered(null);
+  }
+
   function handleBubbleClick(bubble: BubbleData) {
-    if (activeBubble || phase !== "playing") return;
+    if (activeBubbleRef.current || phase !== "playing") return;
     setActiveBubble(bubble);
+    activeBubbleRef.current = bubble;
     setAnswered(null);
   }
 
   function handleAnswer(choice: string) {
-    if (!activeBubble || answered) return;
-    sendMsg({ type: "answer", bubbleId: activeBubble.id, choice });
+    if (!activeBubbleRef.current || answered) return;
+    setAnswered(choice); // Lock immediately
+    sendMsg({ type: "answer", bubbleId: activeBubbleRef.current.id, choice });
+    // Fallback: close modal after 3s if server doesn't respond
+    setTimeout(() => closeModal(), 3000);
   }
 
   const rank = getRank(profile.rating);
