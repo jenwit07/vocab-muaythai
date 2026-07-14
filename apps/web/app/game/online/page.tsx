@@ -156,6 +156,9 @@ export default function OnlineGamePage() {
           break;
 
         case "game_start":
+          closeModal();
+          setSnatch(null);
+          setFlashMsg(null);
           setPhase("playing");
           setPlayers(msg.players);
           setBubbles(new Map());
@@ -217,10 +220,6 @@ export default function OnlineGamePage() {
 
         case "answer_wrong_remove":
           setPlayers(msg.players);
-          if (msg.playerId === myIdRef.current) {
-            setFlashMsg({ word: msg.correctAnswer, meaningTh: msg.correctAnswer });
-            setTimeout(() => setFlashMsg(null), 2000);
-          }
           setBubbles((prev) => {
             const n = new Map(prev);
             const b = n.get(msg.bubbleId);
@@ -240,12 +239,18 @@ export default function OnlineGamePage() {
             id: `p-${Date.now()}`, x: 50, y: 50,
             text: `${msg.playerName} ${msg.penalty}`, color: "#ef4444", at: Date.now(),
           }]);
-          // Opponent grabbed our open bubble but blew it → cheeky "fumbled" reaction
-          if (activeBubbleRef.current?.id === msg.bubbleId && msg.playerId !== myIdRef.current) {
-            setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
-            setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
-          } else {
-            setTimeout(() => closeModal(), 600);
+          // Only touch our modal if THIS is the bubble we had open
+          if (activeBubbleRef.current?.id === msg.bubbleId) {
+            if (msg.playerId !== myIdRef.current) {
+              // opponent grabbed our bubble but blew it → cheeky "fumbled" reaction
+              setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
+              setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+            } else {
+              // we answered our own bubble wrong → flash correct answer, then close
+              setFlashMsg({ word: msg.correctAnswer, meaningTh: msg.correctAnswer });
+              setTimeout(() => setFlashMsg(null), 2000);
+              setTimeout(() => closeModal(), 600);
+            }
           }
           break;
 
@@ -260,13 +265,15 @@ export default function OnlineGamePage() {
           break;
 
         case "game_over":
+          closeModal();
+          setSnatch(null);
           setPhase("result");
           setResult({ players: msg.players, winnerId: msg.winnerId, ratingChanges: msg.ratingChanges ?? {} });
-          // Update local profile
-          const myResult = msg.players.find((p: PlayerInfo) => p.id === myId);
+          // Update local profile (myIdRef — the onmessage closure's myId state is stale)
+          const myResult = msg.players.find((p: PlayerInfo) => p.id === myIdRef.current);
           if (myResult && msg.ratingChanges) {
-            const change = msg.ratingChanges[myId] ?? 0;
-            const won = msg.winnerId === myId;
+            const change = msg.ratingChanges[myIdRef.current] ?? 0;
+            const won = msg.winnerId === myIdRef.current;
             const updated = {
               name: nameInput.trim() || "Player",
               rating: Math.max(0, profile.rating + change),

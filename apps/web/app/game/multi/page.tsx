@@ -123,6 +123,8 @@ export default function MultiPlayerGame() {
           break;
 
         case "game_start":
+          closeModal();
+          setSnatch(null);
           setPhase("playing");
           setPlayers(msg.players);
           setBubbles(new Map());
@@ -201,7 +203,6 @@ export default function MultiPlayerGame() {
 
         case "answer_wrong_remove":
           setPlayers(msg.players);
-          setAnswered(msg.correctAnswer);
           // Shake then remove bubble
           setBubbles((prev) => {
             const next = new Map(prev);
@@ -222,12 +223,17 @@ export default function MultiPlayerGame() {
             id: `p-${Date.now()}`, x: bubbles.get(msg.bubbleId)?.x ?? 50, y: bubbles.get(msg.bubbleId)?.y ?? 50,
             text: `${msg.playerName} ${msg.penalty}`, color: "#ef4444", at: Date.now(),
           }]);
-          // Opponent grabbed our open bubble but blew it → cheeky "fumbled" reaction
-          if (activeBubbleRef.current?.id === msg.bubbleId && msg.playerId !== myIdRef.current) {
-            setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
-            setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
-          } else {
-            setTimeout(() => closeModal(), 800);
+          // Only touch our modal if THIS is the bubble we had open
+          if (activeBubbleRef.current?.id === msg.bubbleId) {
+            if (msg.playerId !== myIdRef.current) {
+              // opponent grabbed our bubble but blew it → cheeky "fumbled" reaction
+              setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
+              setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+            } else {
+              // we answered our own bubble wrong → flash correct answer, then close
+              setAnswered(msg.correctAnswer);
+              setTimeout(() => closeModal(), 800);
+            }
           }
           break;
 
@@ -236,6 +242,8 @@ export default function MultiPlayerGame() {
           break;
 
         case "game_over":
+          closeModal();
+          setSnatch(null);
           setPhase("result");
           setResult({ players: msg.players, winnerId: msg.winnerId, winnerName: msg.winnerName });
           break;
