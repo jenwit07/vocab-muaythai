@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { SnatchOverlay, pickSnatchTaunt } from "../_components/SnatchOverlay";
+import { SnatchOverlay, pickSnatchTaunt } from "../_components";
 
 // --- Types ---
 type PlayerInfo = {
@@ -107,6 +107,7 @@ export default function OnlineGamePage() {
   const [activeBubble, setActiveBubble] = useState<BubbleData | null>(null);
   const activeBubbleRef = useRef<BubbleData | null>(null);
   const myIdRef = useRef("");
+  const answerTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const [snatch, setSnatch] = useState<{ emoji: string; text: string } | null>(null);
   const [answered, setAnswered] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60000);
@@ -210,8 +211,10 @@ export default function OnlineGamePage() {
           break;
 
         case "bubble_expired":
-          // Claimed bubbles never expire server-side; just drop it from the board.
+          // Server only expires unclaimed bubbles. Defensively close modal if
+          // claim was lost in transit and this was our active bubble.
           setBubbles((prev) => { const n = new Map(prev); n.delete(msg.bubbleId); return n; });
+          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
           break;
 
         case "bubble_gone":
@@ -307,6 +310,7 @@ export default function OnlineGamePage() {
   }
 
   function closeModal() {
+    clearTimeout(answerTimeoutRef.current);
     setActiveBubble(null);
     activeBubbleRef.current = null;
     setAnswered(null);
@@ -326,7 +330,8 @@ export default function OnlineGamePage() {
     setAnswered(choice); // Lock immediately
     sendMsg({ type: "answer", bubbleId: activeBubbleRef.current.id, choice });
     // Fallback: close modal after 3s if server doesn't respond
-    setTimeout(() => closeModal(), 3000);
+    // Stored in ref so closeModal() can cancel it before it fires
+    answerTimeoutRef.current = setTimeout(() => closeModal(), 3000);
   }
 
   const rank = getRank(profile.rating);

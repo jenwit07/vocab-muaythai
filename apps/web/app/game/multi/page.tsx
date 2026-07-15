@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { SnatchOverlay, pickSnatchTaunt } from "../_components/SnatchOverlay";
+import { SnatchOverlay, pickSnatchTaunt } from "../_components";
 
 // --- Types ---
 type PlayerInfo = {
@@ -69,6 +69,7 @@ export default function MultiPlayerGame() {
   const [activeBubble, setActiveBubble] = useState<BubbleData | null>(null);
   const activeBubbleRef = useRef<BubbleData | null>(null);
   const myIdRef = useRef("");
+  const answerTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
   const [snatch, setSnatch] = useState<{ emoji: string; text: string } | null>(null);
   const [answered, setAnswered] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(60000);
@@ -192,9 +193,10 @@ export default function MultiPlayerGame() {
           break;
 
         case "bubble_expired":
-          // A claimed bubble never expires server-side, so a claimed modal stays
-          // open. Just drop the bubble from the board.
+          // Server only expires unclaimed bubbles. If a claim message was lost
+          // in transit, our modal could still be open — close it defensively.
           setBubbles((prev) => { const n = new Map(prev); n.delete(msg.bubbleId); return n; });
+          if (activeBubbleRef.current?.id === msg.bubbleId) closeModal();
           break;
 
         case "bubble_gone":
@@ -268,6 +270,8 @@ export default function MultiPlayerGame() {
   }
 
   function closeModal() {
+    // Cancel any pending fallback timeout so it can't close a *future* modal
+    clearTimeout(answerTimeoutRef.current);
     setActiveBubble(null);
     activeBubbleRef.current = null;
     setAnswered(null);
@@ -286,9 +290,9 @@ export default function MultiPlayerGame() {
     if (!activeBubbleRef.current || answered) return;
     setAnswered(choice); // Lock immediately — prevent double tap
     sendMsg({ type: "answer", bubbleId: activeBubbleRef.current.id, choice });
-    // Server will respond with bubble_popped or answer_wrong_remove
     // Fallback: close modal after 3s if server doesn't respond
-    setTimeout(() => { closeModal(); }, 3000);
+    // Stored in ref so closeModal() can cancel it before it fires
+    answerTimeoutRef.current = setTimeout(() => closeModal(), 3000);
   }
 
   // --- Connect Screen ---
