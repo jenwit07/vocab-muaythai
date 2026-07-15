@@ -49,26 +49,24 @@ export function SnatchOverlay({ emoji, text }: { emoji: string; text: string }) 
         {text}
       </div>
       <style>{`
-        .snatch-overlay { background: rgba(0,0,0,0.45); animation: snatch-shake 0.5s ease-out; }
-        .snatch-emoji { animation: snatch-spin 0.7s cubic-bezier(.2,1.4,.5,1) both; will-change: transform; }
-        .snatch-text { animation: snatch-pop 0.4s ease-out 0.1s both; }
+        .snatch-overlay { background: rgba(0,0,0,0.45); animation: snatch-fade 0.7s ease-out forwards; }
+        .snatch-emoji { animation: snatch-spin 0.5s cubic-bezier(.2,1.4,.5,1) both; will-change: transform; }
+        .snatch-text { animation: snatch-pop 0.3s ease-out 0.05s both; }
+        @keyframes snatch-fade {
+          0%   { opacity: 1; }
+          60%  { opacity: 1; }
+          100% { opacity: 0; }
+        }
         @keyframes snatch-spin {
           0%   { transform: scale(0) rotate(-140deg); opacity: 0; }
-          55%  { transform: scale(1.35) rotate(25deg); opacity: 1; }
-          78%  { transform: scale(0.92) rotate(-10deg); }
+          55%  { transform: scale(1.3) rotate(20deg); opacity: 1; }
+          78%  { transform: scale(0.95) rotate(-8deg); }
           100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
         @keyframes snatch-pop {
-          0%   { transform: scale(0.5) translateY(12px); opacity: 0; }
-          70%  { transform: scale(1.12); }
+          0%   { transform: scale(0.5) translateY(10px); opacity: 0; }
+          70%  { transform: scale(1.08); }
           100% { transform: scale(1) translateY(0); opacity: 1; }
-        }
-        @keyframes snatch-shake {
-          0%,100% { transform: translateX(0); }
-          20% { transform: translateX(-9px); }
-          40% { transform: translateX(9px); }
-          60% { transform: translateX(-6px); }
-          80% { transform: translateX(6px); }
         }
       `}</style>
     </div>

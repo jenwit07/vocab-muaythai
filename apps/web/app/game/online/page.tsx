@@ -194,7 +194,7 @@ export default function OnlineGamePage() {
           if (activeBubbleRef.current?.id === msg.bubbleId) {
             if (msg.playerId !== myIdRef.current) {
               setSnatch(pickSnatchTaunt("stolen", msg.playerName));
-              setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+              setTimeout(() => { setSnatch(null); closeModal(); }, 700);
             } else {
               closeModal();
             }
@@ -247,7 +247,7 @@ export default function OnlineGamePage() {
             if (msg.playerId !== myIdRef.current) {
               // opponent grabbed our bubble but blew it → cheeky "fumbled" reaction
               setSnatch(pickSnatchTaunt("fumbled", msg.playerName));
-              setTimeout(() => { setSnatch(null); closeModal(); }, 1300);
+              setTimeout(() => { setSnatch(null); closeModal(); }, 700);
             } else {
               // we answered our own bubble wrong → flash correct answer, then close
               setFlashMsg({ word: msg.correctAnswer, meaningTh: msg.correctAnswer });
