@@ -21,8 +21,9 @@ export default function RootLayout({
               <span className="text-yellow-500">Pop</span>
             </a>
             <div className="flex gap-4 sm:gap-6 text-sm text-gray-500">
+              <a href="/daily" className="hover:text-gray-900 font-semibold text-blue-600">Daily</a>
               <a href="/" className="hover:text-gray-900">Play</a>
-              <a href="/explore" className="hover:text-gray-900">Explore</a>
+              <a href="/explore" className="hover:text-gray-900 hidden sm:block">Explore</a>
               <a href="/quiz" className="hover:text-gray-900">Quiz</a>
               <a href="/dashboard" className="hover:text-gray-900">Stats</a>
               <a href="/learn" className="hover:text-gray-900 hidden sm:block">Learn</a>

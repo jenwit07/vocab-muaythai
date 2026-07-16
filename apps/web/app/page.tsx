@@ -66,6 +66,13 @@ export default function HomePage() {
 
           {/* Game modes */}
           <div className="grid gap-3">
+            {/* Daily Challenge — hero button */}
+            <a
+              href="/daily"
+              className="rounded-2xl border-2 border-blue-500 bg-blue-50 px-8 py-4 text-lg font-bold text-blue-700 hover:bg-blue-100 active:scale-[0.97] transition-all text-center flex items-center justify-center gap-2"
+            >
+              📚 Daily Challenge
+            </a>
             <a
               href="/game"
               className="rounded-2xl bg-blue-600 text-white px-8 py-4 text-lg font-bold hover:bg-blue-500 active:scale-[0.97] transition-all text-center"
