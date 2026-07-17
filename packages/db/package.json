@@ -12,12 +12,16 @@
     "embeddings": "tsx src/seed/generate-embeddings.ts",
     "indexes": "tsx src/seed/create-indexes.ts",
     "setup": "pnpm seed && pnpm embeddings && pnpm indexes",
+    "parse-pdf": "tsx src/seed/parse-oxford-pdf.ts",
+    "oxford": "tsx src/seed/import-oxford.ts",
+    "oxford:dry": "tsx src/seed/import-oxford.ts --dry-run",
     "build": "tsc",
     "clean": "rm -rf dist"
   },
   "dependencies": {
     "dotenv": "^16.5.0",
-    "mongodb": "^6.14.0"
+    "mongodb": "^6.14.0",
+    "pdfjs-dist": "^6.1.200"
   },
   "devDependencies": {
     "tsx": "^4.19.0",

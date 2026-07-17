@@ -13,6 +13,7 @@ export type VocabWord = {
   collocations: string[];
   examples: string[];
   difficulty: "easy" | "medium" | "hard";
+  level?: "A1" | "A2" | "B1" | "B2"; // Oxford 3000 level
   embedding?: number[]; // vector for semantic search
   createdAt: Date;
 };

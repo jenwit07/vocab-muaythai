@@ -340,8 +340,20 @@ async function fetchVocab(): Promise<VocabItem[]> {
   return [];
 }
 
-// Pre-fetch vocab on startup
-fetchVocab();
+// Pre-fetch vocab on startup — retry until Next.js is ready
+async function fetchVocabWithRetry() {
+  for (let attempt = 1; attempt <= 10; attempt++) {
+    const vocab = await fetchVocab();
+    if (vocab.length > 0) {
+      console.log(`Vocab loaded: ${vocab.length} words`);
+      return;
+    }
+    console.log(`Vocab fetch attempt ${attempt}/10, retrying in 3s...`);
+    await new Promise(r => setTimeout(r, 3000));
+  }
+  console.error("Could not load vocab after 10 attempts.");
+}
+fetchVocabWithRetry();
 
 // --- Player-Room mapping for matchmaking connections ---
 const playerRoomMap = new Map<string, string>();
